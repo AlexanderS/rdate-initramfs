@@ -13,6 +13,45 @@ case "$1" in
     ;;
 esac
 
+generate_resolv_conf() {
+    local domain="" n="" nameservers="" search=""
+
+    if test -n "${DNSDOMAIN}"; then
+        domain="${DNSDOMAIN}"
+    fi
+    for n in "${IPV4DNS0}" "${IPV4DNS1}"; do
+        if test -z "$n" -o "$n" = 0.0.0.0; then
+            continue
+        fi
+        # Remove duplicates
+        case " ${nameservers} " in
+            *\ $n\ *)
+                continue ;;
+        esac
+        nameservers="${nameservers} ${n}"
+    done
+    for n in ${DOMAINSEARCH}; do
+        [ -n "$n" ] || continue
+        # Remove duplicates
+        case " ${search} " in
+            *\ $n\ *)
+                continue ;;
+        esac
+        search="${search} ${n}"
+    done
+
+    # Construct content for resolv.conf
+    if test -n "${domain}"; then
+        echo "domain ${domain}"
+    fi
+    for n in ${nameservers}; do
+        echo "nameserver $n"
+    done
+    if test -n "${search}"; then
+        echo "search ${search# }"
+    fi
+}
+
 if [ -e /etc/rdate/rdate.conf ]; then
     . /etc/rdate/rdate.conf
 fi
@@ -20,6 +59,9 @@ fi
 
 if [ -n "$TIMESERVER" ]; then
     configure_networking
+    if [ ! -e /etc/resolv.conf ]; then
+        generate_resolv_conf > /etc/resolv.conf
+    fi
 
     log_begin_msg "Setting time from $TIMESERVER"
     busybox rdate "$TIMESERVER"
