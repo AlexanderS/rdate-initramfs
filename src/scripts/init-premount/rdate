@@ -52,6 +52,15 @@ generate_resolv_conf() {
     fi
 }
 
+run_rdate() {
+    local opts=""
+
+    if [ "${quiet?}" = "y" ]; then
+        opts="$opts -s";
+    fi
+    busybox rdate $opts "$1"
+}
+
 if [ -e /etc/rdate/rdate.conf ]; then
     . /etc/rdate/rdate.conf
 fi
@@ -64,6 +73,6 @@ if [ -n "$TIMESERVER" ]; then
     fi
 
     log_begin_msg "Setting time from $TIMESERVER"
-    busybox rdate "$TIMESERVER"
+    run_rdate "$TIMESERVER"
     log_end_msg
 fi
