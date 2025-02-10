@@ -1,0 +1,6 @@
+# Override variables from /etc/initramfs-tools/initramfs.conf, see
+# initramfs-tools(8)
+#
+
+# Force use of busybox instead of klibc utilities
+BUSYBOX=y

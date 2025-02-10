@@ -1,0 +1,27 @@
+#!/bin/sh
+
+PREREQ="udev"
+
+prereqs() {
+    echo "$PREREQ"
+}
+
+case "$1" in
+    prereqs)
+        prereqs
+        exit 0
+    ;;
+esac
+
+if [ -e /etc/rdate/rdate.conf ]; then
+    . /etc/rdate/rdate.conf
+fi
+. /scripts/functions
+
+if [ -n "$TIMESERVER" ]; then
+    configure_networking
+
+    log_begin_msg "Setting time from $TIMESERVER"
+    busybox rdate "$TIMESERVER"
+    log_end_msg
+fi

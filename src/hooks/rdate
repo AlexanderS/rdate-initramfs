@@ -1,0 +1,41 @@
+#!/bin/sh
+
+PREREQ=""
+
+prereqs() {
+    echo "$PREREQ"
+}
+
+case "$1" in
+    prereqs)
+        prereqs
+        exit 0
+    ;;
+esac
+
+. /usr/share/initramfs-tools/hook-functions
+
+rdate_warn() {
+    echo "rdate: WARNING:" "$@" >&2 
+}
+
+CONFIG="/etc/rdate-initramfs/rdate.conf"
+
+if [ ! -s "$CONFIG" ]; then
+    rdate_warn "Config missing, will not run rdate"
+    exit 0
+fi
+
+. "$CONFIG"
+if [ -z "$TIMESERVER" ]; then
+    rdate_warn "No timeserver configured, will not run rdate"
+    exit 0
+fi
+
+if ! timeout 3 busybox rdate -p "$TIMESERVER" >/dev/null; then
+    rdate_warn "Timeserver could not be reached, rdate may not be work"
+fi
+
+# Copy config
+mkdir -p -- "$DESTDIR/etc/rdate"
+cp -p "$CONFIG" "$DESTDIR/etc/rdate"
