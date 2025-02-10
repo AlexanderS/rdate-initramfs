@@ -10,9 +10,9 @@ and your device has not hardware clock.
 
 You need to have a time server, that supports [RFC
 868](https://www.rfc-editor.org/rfc/rfc868.html). This is **not** NTP. It's a
-simple protocol over port 37. You can check with `busybox rdate -p TIMESERVER`,
-if your server supports this protocol. If you want to host this server by
-yourself, you can use the build-in time server of inetd` or `xinetd`.
+simple protocol over TCP port 37. You can check with `busybox rdate -p
+TIMESERVER`, if your server supports this protocol. If you want to host this
+server by yourself, you can use the build-in time server of inetd` or `xinetd`.
 
 
 ## Usage
