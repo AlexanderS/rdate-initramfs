@@ -3,6 +3,8 @@ CONFDIR ?= $(DESTDIR)/etc/rdate-initramfs
 
 FILES = $(INITRAMFS)/hooks/rdate $(INITRAMFS)/scripts/init-premount/rdate $(INITRAMFS)/conf-hooks.d/rdate $(CONFDIR)/rdate.conf
 
+all:
+
 install: $(FILES)
 
 $(INITRAMFS)/hooks/rdate: src/hooks/rdate
