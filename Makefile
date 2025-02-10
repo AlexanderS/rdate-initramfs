@@ -1,25 +1,28 @@
-INITRAMFS ?= $(DESTDIR)/etc/initramfs-tools
-CONFDIR ?= $(DESTDIR)/etc/rdate-initramfs
+INITRAMFSDIR ?= /etc/initramfs-tools
+CONFDIR ?= /etc/rdate-initramfs
 
-FILES = $(INITRAMFS)/hooks/rdate $(INITRAMFS)/scripts/init-premount/rdate $(INITRAMFS)/conf-hooks.d/rdate $(CONFDIR)/rdate.conf
+DEST_INITRAMFS = $(DESTDIR)/$(INITRAMFSDIR)
+DEST_CONF = $(DESTDIR)/$(CONFDIR)
+
+FILES = $(DEST_INITRAMFS)/hooks/rdate $(DEST_INITRAMFS)/scripts/init-premount/rdate $(DEST_INITRAMFS)/conf-hooks.d/rdate $(DEST_CONF)/rdate.conf
 
 all:
 
 install: $(FILES)
 
-$(INITRAMFS)/hooks/rdate: src/hooks/rdate
+$(DEST_INITRAMFS)/hooks/rdate: src/hooks/rdate
 	install -D $< $@
 
-$(INITRAMFS)/scripts/init-premount/rdate: src/scripts/init-premount/rdate
+$(DEST_INITRAMFS)/scripts/init-premount/rdate: src/scripts/init-premount/rdate
 	install -D $< $@
 
-$(INITRAMFS)/conf-hooks.d/rdate: src/conf-hooks.d/rdate
+$(DEST_INITRAMFS)/conf-hooks.d/rdate: src/conf-hooks.d/rdate
 	install -m0644 -D $< $@
 
-$(CONFDIR)/rdate.conf: src/scripts/rdate.conf
+$(DEST_CONF)/rdate.conf: src/scripts/rdate.conf
 	install -m0644 -D $< $@
 
 .PHONY: uninstall
 uninstall:
 	$(RM) -f $(FILES)
-	-rmdir $(CONFDIR)
+	-rmdir $(DEST_CONF)
