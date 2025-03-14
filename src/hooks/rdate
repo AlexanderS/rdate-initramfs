@@ -15,25 +15,21 @@ esac
 
 . /usr/share/initramfs-tools/hook-functions
 
-rdate_warn() {
-    echo "rdate: WARNING:" "$@" >&2 
-}
-
 CONFIG="/etc/rdate-initramfs/rdate.conf"
 
 if [ ! -s "$CONFIG" ]; then
-    rdate_warn "Config missing, will not run rdate"
+    echo "E: rdate: Config missing, skipping rdate"
     exit 0
 fi
 
 . "$CONFIG"
 if [ -z "$TIMESERVER" ]; then
-    rdate_warn "No timeserver configured, will not run rdate"
+    echo "E: rdate: No timeserver configured, skipping rdate"
     exit 0
 fi
 
 if ! timeout 3 busybox rdate -p "$TIMESERVER" >/dev/null; then
-    rdate_warn "Timeserver could not be reached, rdate may not be work"
+    echo "W: rdate: Timeserver could not be reached, rdate may not be work"
 fi
 
 # Copy config
